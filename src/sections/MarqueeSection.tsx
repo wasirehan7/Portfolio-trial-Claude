@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import MockImage from '../components/MockImage'
 
 const RENDER_COUNT = 21
 const images = Array.from({ length: RENDER_COUNT }, (_, i) =>
@@ -10,6 +11,15 @@ const row2 = images.slice(11, 21)
 
 function tripled(arr: string[]) {
   return [...arr, ...arr, ...arr]
+}
+
+const TILE_STYLE: React.CSSProperties = {
+  width: '420px',
+  height: '270px',
+  borderRadius: '16px',
+  flexShrink: 0,
+  overflow: 'hidden',
+  position: 'relative',
 }
 
 export default function MarqueeSection() {
@@ -30,28 +40,6 @@ export default function MarqueeSection() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const tileStyle: React.CSSProperties = {
-    width: '420px',
-    height: '270px',
-    borderRadius: '16px',
-    objectFit: 'cover',
-    flexShrink: 0,
-    background: '#1a1a2e',
-  }
-
-  const placeholderStyle: React.CSSProperties = {
-    ...tileStyle,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#D7E2EA',
-    fontSize: '0.7rem',
-    opacity: 0.2,
-    letterSpacing: '0.12em',
-    textTransform: 'uppercase',
-    fontFamily: 'Kanit, sans-serif',
-  }
-
   return (
     <section
       ref={sectionRef}
@@ -61,26 +49,15 @@ export default function MarqueeSection() {
       {/* Row 1 — scrolls right */}
       <div
         className="flex gap-3 mb-3"
-        style={{
-          transform: `translateX(${offset - 200}px)`,
-          willChange: 'transform',
-        }}
+        style={{ transform: `translateX(${offset - 200}px)`, willChange: 'transform' }}
       >
         {tripled(row1).map((src, i) => (
-          <img
+          <MockImage
             key={i}
             src={src}
-            alt=""
-            loading="lazy"
-            style={tileStyle}
-            onError={(e) => {
-              const t = e.currentTarget
-              t.style.display = 'none'
-              const ph = document.createElement('div')
-              Object.assign(ph.style, placeholderStyle)
-              ph.textContent = `Render ${(i % row1.length) + 1}`
-              t.parentElement?.insertBefore(ph, t)
-            }}
+            label={`Render ${(i % row1.length) + 1}`}
+            style={TILE_STYLE}
+            gradientIndex={i % 6}
           />
         ))}
       </div>
@@ -88,26 +65,15 @@ export default function MarqueeSection() {
       {/* Row 2 — scrolls left */}
       <div
         className="flex gap-3"
-        style={{
-          transform: `translateX(${-(offset - 200)}px)`,
-          willChange: 'transform',
-        }}
+        style={{ transform: `translateX(${-(offset - 200)}px)`, willChange: 'transform' }}
       >
         {tripled(row2).map((src, i) => (
-          <img
+          <MockImage
             key={i}
             src={src}
-            alt=""
-            loading="lazy"
-            style={tileStyle}
-            onError={(e) => {
-              const t = e.currentTarget
-              t.style.display = 'none'
-              const ph = document.createElement('div')
-              Object.assign(ph.style, placeholderStyle)
-              ph.textContent = `Render ${(i % row2.length) + 12}`
-              t.parentElement?.insertBefore(ph, t)
-            }}
+            label={`Render ${(i % row2.length) + 12}`}
+            style={TILE_STYLE}
+            gradientIndex={(i + 2) % 6}
           />
         ))}
       </div>
